@@ -23,15 +23,18 @@ MODEL_DIR = osp.abspath(
 
 BIG = 1e6
 
+
 def q_inv(a):
     return [a[0], -a[1], -a[2], -a[3]]
 
-def q_mult(a, b): # multiply two quaternion
+
+def q_mult(a, b):  # multiply two quaternion
     w = a[0]*b[0] - a[1]*b[1] - a[2]*b[2] - a[3]*b[3]
     i = a[0]*b[1] + a[1]*b[0] + a[2]*b[3] - a[3]*b[2]
     j = a[0]*b[2] - a[1]*b[3] + a[2]*b[0] + a[3]*b[1]
     k = a[0]*b[3] + a[1]*b[2] - a[2]*b[1] + a[3]*b[0]
     return [w, i, j, k]
+
 
 class MujocoEnv(Env):
     FILE = None
@@ -84,6 +87,8 @@ class MujocoEnv(Env):
             self.init_qpos = init_qpos
         self.dcom = None
         self.current_com = None
+        self.metadata = {}
+        self.reward_range = None
         self.reset()
         super(MujocoEnv, self).__init__()
 
@@ -109,9 +114,9 @@ class MujocoEnv(Env):
     def reset_mujoco(self, init_state=None):
         if init_state is None:
             self.model.data.qpos = self.init_qpos + \
-                                   np.random.normal(size=self.init_qpos.shape) * 0.01
+                np.random.normal(size=self.init_qpos.shape) * 0.01
             self.model.data.qvel = self.init_qvel + \
-                                   np.random.normal(size=self.init_qvel.shape) * 0.1
+                np.random.normal(size=self.init_qvel.shape) * 0.1
             self.model.data.qacc = self.init_qacc
             self.model.data.ctrl = self.init_ctrl
         else:
@@ -175,7 +180,7 @@ class MujocoEnv(Env):
     def inject_action_noise(self, action):
         # generate action noise
         noise = self.action_noise * \
-                np.random.normal(size=action.shape)
+            np.random.normal(size=action.shape)
         # rescale the noise to make it proportional to the action bounds
         lb, ub = self.action_bounds
         noise = 0.5 * (ub - lb) * noise
@@ -206,7 +211,7 @@ class MujocoEnv(Env):
             viewer.loop_once()
             # self.get_viewer(config=config).render()
             data, width, height = self.get_viewer().get_image()
-            return np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1,:,:]
+            return np.fromstring(data, dtype='uint8').reshape(height, width, 3)[::-1, :, :]
         if close:
             self.stop_viewer()
 
