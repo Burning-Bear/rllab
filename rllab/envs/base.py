@@ -4,6 +4,7 @@ from cached_property import cached_property
 
 
 class Env(object):
+
     def step(self, action):
         """
         Run one timestep of the environment's dynamics. When end of episode
@@ -74,7 +75,6 @@ class Env(object):
         """
         raise NotImplementedError
 
-
     def terminate(self):
         """
         Clean up operation,
@@ -86,6 +86,10 @@ class Env(object):
 
     def set_param_values(self, params):
         pass
+
+    def _seed(self, seed=None): return []
+
+    def seed(self, seed=None): return self._seed(seed)
 
 
 _Step = collections.namedtuple("Step", ["observation", "reward", "done", "info"])
